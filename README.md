@@ -19,6 +19,14 @@ go get
 go build -o bin/lightbulb .
 ```
 
+## Quick Start
+
+To easily see Lightbulb in action once it's installed (assuming you are in the cloned Github repository directory):
+
+```shell
+bin/lightbulb examples/simple.md
+```
+
 ## Example Markdown file
 
 In [this Markdown file](examples/simple.md), there are two code blocks that will be executed sequentially.
