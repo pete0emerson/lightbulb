@@ -40,4 +40,4 @@ People who want to follow this Markdown step-by-step can do so (without even bei
 
 
 ---
-Read about the design and development approach for Lightbulb [here].(docs/design_and_development.md)
+Read about the design and development approach for Lightbulb [here](docs/design_and_development.md).
