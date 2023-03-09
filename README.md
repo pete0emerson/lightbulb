@@ -99,7 +99,7 @@ date
 |`set`|Set `-x` and/or `-e` flags for the shell.||:x:|
 |`exitOnError`|When the file runs, stop executing future Lightbulb actions if there is a non-0 exit code.|true|:x:|
 
-#### Examples
+#### Example
 
 ~~~
 <!-- lightbulb:runShell name=showDate shell:bash set:x,e exitOnError:false -->
