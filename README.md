@@ -8,6 +8,16 @@ Lightbulb is a program and a Golang module to sequentially execute and test Mark
 * Execute shell commands
 * Create environment variables that persist from block to block
 
+## Installation
+
+Currently, you must build Lightbulb yourself. Having Golang installed is required.
+
+```shell
+git@github.com:pete0emerson/lightbulb.git
+cd lightbulb
+go build -o bin/lightbulb cmd/main.go
+```
+
 ## Example Markdown file
 
 In [this Markdown file](examples/simple.md), there are two code blocks that will be executed sequentially.
