@@ -57,10 +57,12 @@ CODE BLOCK HERE
 
 All actions must include the name of the action. This is stored in the state machine, and is useful when debugging the execution of a Markdown file when something has gone wrong.
 
+All actions may include one or more tags. This is useful for testing purposes, as lightbulb can run only certain tags or skip certain tags if desired.
+
 |name|description|default|required|
 |----|-----------|-------|--------|
 |`name`|The name of the block. This must be a single word.| | :white_check_mark:|
-
+|`tags`|Tags allow lightbulb to control execution of actions.|all|:x:|
 
 ### createFile
 
@@ -105,10 +107,6 @@ date
 
 sample/file.sh
 ```
-~~~
-
-~~~
-<!-- lightbulb runShell name=dateWithoutCodeBlock shell:bash set:x,e exitOnError:true command="date -u" -->
 ~~~
 
 ### setEnvironmentVars
