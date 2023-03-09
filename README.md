@@ -70,7 +70,7 @@ All actions must include the name of the action. This is stored in the state mac
 
 |name|description|default|required|
 |----|-----------|-------|--------|
-|`path`|The relative path where the file will be created. Absolute paths are not permitted| |:white_check_mark:|
+|`path`|The relative path where the file will be created. Absolute paths are not permitted.| |:white_check_mark:|
 |`mode`|The unix [mode](https://linuxhandbook.com/chmod-command/) of the file.| 0700 | :x: |
 
 #### Example
@@ -123,7 +123,7 @@ Mixing different configurations of environment variables isn't allowed, however,
 |----|-----------|-------|--------|
 |`keys`|A comma separated list of environment variable names. When prompted, `keys` will be presented in order.||:white_check_mark:|
 |`prompt`|Specify when the user will be prompted for env var values. Options are: `never` (if the env var is not set, this will exit with a non-0 exit code), `missing` (prompt only if the env var isn't set), and `always` (prompt always).|missing|:x:|
-|`secret`|If set to `true` and the user is prompted, text will not be echoed to the screen|false|:x:|
+|`secret`|If set to `true` and the user is prompted, text will not be echoed to the screen.|false|:x:|
 |`persist`|If set to `true`, the environment variable value will persist through all subsequent code blocks.|true|:x:|
 |`sensitive`|If set to `true`, the environment variable value will never be saved in the state machine.|false|:x:|
 
@@ -131,9 +131,8 @@ Mixing different configurations of environment variables isn't allowed, however,
 
 ~~~
 <!-- lightbulb:setEnvironmentVars keys:FOO,BAR,BAZ prompt:always persist:false -->
+<!-- lightbulb:setEnvironmentVars keys:GITHUB_TOKEN prompt:missing persist:false secret:true sensitive:true -->
 ~~~
-
-Mixing different configurations of environment variables isn't allowed, however, you can specify multiple lightbulb actions back-to-back to get the desired effect and / or order.
 
 ---
 Read about the design and development approach for Lightbulb [here](docs/design_and_development.md).
