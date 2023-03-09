@@ -2,6 +2,12 @@
 
 Lightbulb is a program and a Golang module to sequentially execute and test Markdown code blocks. Lightbulb leverages formatted HTML comments to execute a code block, create a file, or prompt for environment variables. State (via environment variables) is maintained and carried over from block to block.
 
+## Features
+
+* Create files with the contents of a Markdown code block
+* Execute shell commands
+* Create environment variables that persist from block to block
+
 ## Example Markdown file
 
 In [this Markdown file](examples/simple.md), there are two code blocks that will be executed sequentially.
