@@ -15,7 +15,8 @@ Currently, you must build Lightbulb yourself. Having Golang installed is require
 ```shell
 git@github.com:pete0emerson/lightbulb.git
 cd lightbulb
-go build -o bin/lightbulb cmd/main.go
+go get
+go build -o bin/lightbulb .
 ```
 
 ## Example Markdown file
