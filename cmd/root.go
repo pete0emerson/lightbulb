@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"encoding/json"
 	"os"
 
+	"github.com/pete0emerson/lightbulb/lightbulb"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -13,6 +15,14 @@ var includeTags []string
 var skipTags []string
 var interactiveMode bool
 
+func printJSON(obj interface{}) string {
+	b, err := json.MarshalIndent(obj, "", "  ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(b)
+}
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "lightbulb URL|FILE",
@@ -22,9 +32,17 @@ comments in Markdown files, Lightbulb can create files and execute code blocks.
 Lightbulb facilitates the testing of tutorial-style Markdown documentation.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		log.WithFields(log.Fields{
-			"animal": "walrus",
-		}).Info("A walrus appears")
+		log.Debugf("includeTags: %s", includeTags)
+		log.Debugf("skipTags: %s", skipTags)
+		content, err := lightbulb.LoadFromFile(args[0])
+		if err != nil {
+			log.Fatal(err)
+		}
+		md, err := lightbulb.Parse(string(content))
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Info(printJSON(md))
 	},
 }
 
