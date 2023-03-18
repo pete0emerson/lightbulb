@@ -2,7 +2,7 @@
 
 Make sure the file is executable.
 
-<!-- lightbulb:createFile name:dateFile mode:0700 -->
+<!-- lightbulb:createFile name:dateFile path:date.sh tags:one,two,three mode:0700 -->
 ```shell
 #!/bin/bash
 
