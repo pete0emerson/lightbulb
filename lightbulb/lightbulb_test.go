@@ -102,6 +102,26 @@ func TestGetBlockParameters(t *testing.T) {
 
 }
 
+func TestGetBlockCode(t *testing.T) {
+	block := Block{}
+	text := "```" + `shell
+#!/bin/bash
+
+echo "The current date in UTC is $(date -u)."
+` + "```"
+	err := getBlockCode(text, &block)
+	if err != nil {
+		t.Error(err)
+	}
+	if block.Code != `#!/bin/bash
+
+echo "The current date in UTC is $(date -u)."
+` {
+		t.Errorf("Expected code, got '%s'", block.Code)
+	}
+
+}
+
 func TestParse(t *testing.T) {
 	text, err := LoadFromFile("good.md")
 	if err != nil {
@@ -131,6 +151,13 @@ func TestParse(t *testing.T) {
 	if blocks[0].Mode != "0700" {
 		t.Error("Expected block.Mode 0700, got ", blocks[0].Mode)
 	}
+	if blocks[0].Code != `#!/bin/bash
+
+echo "The current date in UTC is $(date -u)."
+` {
+		t.Errorf("Expected block.Code, got '%s'", blocks[0].Code)
+	}
+
 	if blocks[1].Action != "runShell" {
 		t.Error("Expected block.Action runShell, got ", blocks[1].Action)
 	}
