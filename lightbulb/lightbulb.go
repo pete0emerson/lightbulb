@@ -16,7 +16,7 @@ type Block struct {
 	Tags        []string
 	Path        string
 	Mode        string
-	Command     string
+	Code        string
 	Shell       string
 	Set         string
 	ExitOnError bool
@@ -87,8 +87,6 @@ func getBlockParameters(text string, block *Block) error {
 			block.Path = value
 		case "mode":
 			block.Mode = value
-		case "command":
-			block.Command = value
 		case "shell":
 			block.Shell = value
 		case "set":
@@ -121,6 +119,20 @@ func getBlockParameters(text string, block *Block) error {
 	return nil
 }
 
+// getBlockCode returns the code block from a markdown string
+func getBlockCode(text string, block *Block) error {
+	re := regexp.MustCompile("(?s)```[^\n]*\n(.*?)```")
+	log.Debugf("Finding block code matching %s", re.String())
+	matches := re.FindStringSubmatch(text)
+	if len(matches) == 0 {
+		return errors.New("no matches in block found")
+	} else {
+		block.Code = matches[1]
+	}
+	return nil
+
+}
+
 // processTextBlock processes a raw text block into a Block
 func processTextBlock(text string) (Block, error) {
 	log.Debugf("Processing text block:\n%s", text)
@@ -129,10 +141,17 @@ func processTextBlock(text string) (Block, error) {
 	if err != nil {
 		return block, err
 	}
+
 	err = getBlockParameters(text, &block)
 	if err != nil {
 		return block, err
 	}
+
+	err = getBlockCode(text, &block)
+	if err != nil {
+		return block, err
+	}
+
 	return block, nil
 }
 
