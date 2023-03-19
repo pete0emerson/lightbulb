@@ -38,11 +38,15 @@ Lightbulb facilitates the testing of tutorial-style Markdown documentation.`,
 		if err != nil {
 			log.Fatal(err)
 		}
-		md, err := lightbulb.Parse(string(content))
+		blocks, err := lightbulb.Parse(string(content))
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Info(printJSON(md))
+
+		err = lightbulb.Run(blocks)
+		if err != nil {
+			log.Fatal(err)
+		}
 	},
 }
 

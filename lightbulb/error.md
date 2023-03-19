@@ -13,10 +13,5 @@ echo "The current date in UTC is $(date -u)."
 
 <!-- lightbulb:runShell name:runDate shell:bash -->
 ```console
-./date.sh
-```
-
-This will output something like the following:
-```console
-Thu Mar  9 13:35:34 UTC 2023
+exit 1
 ```

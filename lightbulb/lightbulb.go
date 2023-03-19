@@ -1,10 +1,15 @@
 package lightbulb
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
+	"io/fs"
 	"io/ioutil"
+	"os"
+	"os/exec"
 	"regexp"
+	"strconv"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -194,4 +199,101 @@ func LoadFromFile(fileName string) (string, error) {
 func LoadFromURL(url string) (string, error) {
 	log.Debugf("Loading markdown from URL: %s", url)
 	return "", nil
+}
+
+// saveBlockToFile saves a block to a file
+func saveBlockToFile(fileName string, block Block) error {
+	log.Infof("Saving file: %s with mode: %s", fileName, block.Mode)
+	log.Debugf("File contents:\n%s", block.Code)
+
+	modeVal, err := strconv.ParseUint(block.Mode, 8, 32)
+	if err != nil {
+		return err
+	}
+	mode := uint32(modeVal)
+	return ioutil.WriteFile(fileName, []byte(block.Code), fs.FileMode(mode))
+
+}
+
+// executeBlock executes a block
+func executeFile(filePath string) error {
+	log.Infof("Executing file: %s", filePath)
+
+	cmd := exec.Command(filePath)
+	// cmd.Env = append(os.Environ(), envVars...)
+
+	cmdReader, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil
+	}
+
+	scanner := bufio.NewScanner(cmdReader)
+	go func() {
+		for scanner.Scan() {
+			fmt.Printf("%s\n", scanner.Text())
+		}
+	}()
+
+	err = cmd.Start()
+	if err != nil {
+		return err
+	}
+
+	err = cmd.Wait()
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+// RunSingle runs a block
+func RunSingle(block Block) error {
+	log.Infof("Running block: %s", block.Name)
+	log.Debugf("Block: %+v", block)
+
+	switch block.Action {
+	case "createFile":
+		saveBlockToFile(block.Path, block)
+	case "runShell":
+		block.Mode = "0700"
+		if !strings.Contains(block.Shell, "/") {
+			block.Shell = fmt.Sprintf("/bin/%s", block.Shell)
+		}
+		if block.Shell == "" {
+			block.Shell = "/bin/bash"
+		}
+		if !strings.HasPrefix(block.Code, "#!") {
+			block.Code = fmt.Sprintf(`#!%s
+
+%s`, block.Shell, block.Code)
+		}
+		file, err := os.CreateTemp(".", "shell-*")
+		if err != nil {
+			return err
+		}
+		file.Close()
+		os.Remove(file.Name())
+
+		err = saveBlockToFile(file.Name(), block)
+		if err != nil {
+			return err
+		}
+		defer os.Remove(file.Name())
+		return executeFile(file.Name())
+	}
+	return nil
+}
+
+// Run runs all blocks
+func Run(blocks []Block) error {
+	log.Info("Running all blocks")
+	for _, block := range blocks {
+		err := RunSingle(block)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
