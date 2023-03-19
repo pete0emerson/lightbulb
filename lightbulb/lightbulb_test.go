@@ -30,7 +30,7 @@ func TestFindAllblocks(t *testing.T) {
 	}
 
 	sections := []string{
-		`<!-- lightbulb:createFile name:dateFile path:date.sh tags:one,two,three mode:0700 -->
+		`<!-- lightbulb:createFile name:dateFile path:./date.sh tags:one,two,three mode:0700 -->
 ` + "```" + `shell
 #!/bin/bash
 
@@ -142,8 +142,8 @@ func TestParse(t *testing.T) {
 	if blocks[0].Name != "dateFile" {
 		t.Error("Expected block.Name dateFile, got ", blocks[0].Name)
 	}
-	if blocks[0].Path != "date.sh" {
-		t.Error("Expected block.Path date.sh, got ", blocks[0].Path)
+	if blocks[0].Path != "./date.sh" {
+		t.Error("Expected block.Path ./date.sh, got ", blocks[0].Path)
 	}
 	if !arrayMatch(blocks[0].Tags, []string{"one", "two", "three"}) {
 		t.Error("Expected block.Tags [one two three], got ", blocks[0].Tags)
@@ -168,4 +168,48 @@ echo "The current date in UTC is $(date -u)."
 		t.Error("Expected block.Shell bash, got ", blocks[1].Shell)
 	}
 
+}
+
+func TestGoodRun(t *testing.T) {
+	text, err := LoadFromFile("good.md")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	blocks, err := Parse(text)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if len(blocks) != 2 {
+		t.Error("Expected 2 blocks, got ", len(blocks))
+		return
+	}
+	err = Run(blocks)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func TestBadRun(t *testing.T) {
+	text, err := LoadFromFile("error.md")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	blocks, err := Parse(text)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if len(blocks) != 2 {
+		t.Error("Expected 2 blocks, got ", len(blocks))
+		return
+	}
+	err = Run(blocks)
+	if err == nil {
+		t.Error("Expected error, got nil")
+		return
+	}
 }
