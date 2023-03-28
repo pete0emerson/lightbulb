@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"os"
+	"strings"
 
 	"github.com/pete0emerson/lightbulb/lightbulb"
 	log "github.com/sirupsen/logrus"
@@ -32,6 +33,24 @@ comments in Markdown files, Lightbulb can create files and execute code blocks.
 Lightbulb facilitates the testing of tutorial-style Markdown documentation.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+
+		switch strings.ToLower(viper.GetString("log-level")) {
+		case "debug":
+			log.SetLevel(log.DebugLevel)
+		case "info":
+			log.SetLevel(log.InfoLevel)
+		case "warn":
+			log.SetLevel(log.WarnLevel)
+		case "error":
+			log.SetLevel(log.ErrorLevel)
+		case "fatal":
+			log.SetLevel(log.FatalLevel)
+		case "panic":
+			log.SetLevel(log.PanicLevel)
+		default:
+			log.SetLevel(log.InfoLevel)
+		}
+
 		log.Debugf("includeTags: %s", includeTags)
 		log.Debugf("skipTags: %s", skipTags)
 		content, err := lightbulb.LoadFromFile(args[0])
@@ -61,6 +80,8 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	rootCmd.PersistentFlags().StringP("log-level", "l", "info", "Log level (debug, info, warn, error, fatal, panic) ENV: LIGHTBULB_LOG_LEVEL")
+	viper.BindPFlag("log-level", rootCmd.PersistentFlags().Lookup("log-level"))
 	rootCmd.Flags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.lightbulb.yaml)")
 	rootCmd.Flags().StringSliceVarP(&includeTags, "include-tag", "t", []string{"all"}, "Array stating the tags to be included")
 	viper.BindPFlag("include-tag", rootCmd.Flags().Lookup("include-tag"))
@@ -68,7 +89,6 @@ func init() {
 	viper.BindPFlag("skip-tag", rootCmd.Flags().Lookup("skip-tag"))
 	rootCmd.Flags().BoolVarP(&interactiveMode, "interactive", "i", false, "Interactive mode")
 	viper.BindPFlag("interactive", rootCmd.Flags().Lookup("interactive"))
-
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -87,10 +107,13 @@ func initConfig() {
 		viper.SetConfigName(".lightbulb")
 	}
 
+	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+	viper.SetEnvPrefix("lightbulb")
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		log.Debug("Using config file:", viper.ConfigFileUsed())
 	}
+
 }
